@@ -985,7 +985,11 @@ class Agent:
 
         if not isinstance(tool_name, str) or not tool_name.strip():
             raise ValueError("Tool request must have a tool_name (type string) field")
-        if not isinstance(tool_args, dict):
+
+        # Accept either canonical key (tool_args) or alias (args), but require
+        # that one of them is explicitly present and maps to an object.
+        has_args_key = ("tool_args" in tool_request) or ("args" in tool_request)
+        if (not has_args_key) or (not isinstance(tool_args, dict)):
             raise ValueError("Tool request must have a tool_args (type dictionary) field")
 
 
