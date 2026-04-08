@@ -976,9 +976,16 @@ class Agent:
     async def validate_tool_request(self, tool_request: Any):
         if not isinstance(tool_request, dict):
             raise ValueError("Tool request must be a dictionary")
-        if not tool_request.get("tool_name") or not isinstance(tool_request.get("tool_name"), str):
+
+        # Backward-/format-compatibility: accept either
+        # {"tool_name": "...", "tool_args": {...}}
+        # or {"tool": "...", "args": {...}}
+        tool_name = tool_request.get("tool_name", tool_request.get("tool"))
+        tool_args = tool_request.get("tool_args", tool_request.get("args"))
+
+        if not isinstance(tool_name, str) or not tool_name.strip():
             raise ValueError("Tool request must have a tool_name (type string) field")
-        if not isinstance(tool_request.get("tool_args"), dict):
+        if not isinstance(tool_args, dict):
             raise ValueError("Tool request must have a tool_args (type dictionary) field")
 
 
